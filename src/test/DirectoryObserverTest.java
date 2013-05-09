@@ -1,25 +1,17 @@
 package test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.*;
+import java.nio.file.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import main.DirectoryObserver;
-import main.NewFileListener;
+import main.*;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.codec.digest.*;
+import org.apache.commons.io.*;
+import org.junit.*;
 
 
 
@@ -82,11 +74,13 @@ public class DirectoryObserverTest
 			@Override
 			public void onError(File doneFile, Exception e)
 			{
+				fail();
 			}
 			
 			@Override
 			public void onChecksumMismatch(File newFile, File doneFile)
 			{
+				fail();
 			}
 		});
 		
@@ -124,11 +118,13 @@ public class DirectoryObserverTest
 			@Override
 			public void onNewFile(File newFile)
 			{
+				fail();
 			}
 			
 			@Override
 			public void onError(File doneFile, Exception e)
 			{
+				fail();
 			}
 			
 			@Override
@@ -156,6 +152,7 @@ public class DirectoryObserverTest
 			@Override
 			public void onNewFile(File newFile)
 			{
+				fail();
 			}
 			
 			@Override
@@ -167,6 +164,7 @@ public class DirectoryObserverTest
 			@Override
 			public void onChecksumMismatch(File newFile, File doneFile)
 			{
+				fail();
 			}
 		});
 		
