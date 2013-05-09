@@ -1,4 +1,4 @@
-package alecava;
+package main;
 
 import java.io.File;
 

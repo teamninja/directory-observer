@@ -1,4 +1,4 @@
-package alecava.test;
+package test;
 
 import static org.junit.Assert.assertTrue;
 
@@ -11,6 +11,9 @@ import java.nio.file.Path;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import main.DirectoryObserver;
+import main.NewFileListener;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -18,8 +21,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import alecava.DirectoryObserver;
-import alecava.NewFileListener;
 
 
 public class DirectoryObserverTest
