@@ -13,7 +13,7 @@ Write a file in your observed directory
 ~/observable $ ls
 new_file
 ```
-Touch the *.done file
+Touch the _*.done_ file
 ```bash
 ~/observable $ md5sum new_file 
 b1946ac92492d2347c6235b4d2611184  new_file
