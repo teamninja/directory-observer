@@ -10,14 +10,12 @@ Usage
 Write a file in your observed directory
 ```bash
 ~/observable $ echo hello > new_file
-~/observable $ ls
-new_file
 ```
 Touch the _*.done_ file
 ```bash
 ~/observable $ md5sum new_file 
 b1946ac92492d2347c6235b4d2611184  new_file
-touch new_file.b1946ac92492d2347c6235b4d2611184.done
+~/observable $ touch new_file.b1946ac92492d2347c6235b4d2611184.done
 ```
 ### In the Java code...
 The _onNewFile()_ callback will be invoked if _new\_file_ exists and the checksum match with the one in the _*.done_ file name
