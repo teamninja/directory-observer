@@ -6,9 +6,21 @@ A library for observing a directory and getting notified when a new file is adde
 Usage
 -----
 
-Write a file _myFile_ in _myDir_ then write the file _myFile.md5sumOfMyFile.done_ in the same directory.
-
-The _onNewFile_ callback will be invoked if _myFile_ exists and the checksum match with the one in the _*.done_ file
+### On the file system side...
+Write a file in your observed directory
+```bash
+~/observable $ echo hello > new_file
+~/observable $ ls
+new_file
+```
+Touch the *.done file
+```bash
+~/observable $ md5sum new_file 
+b1946ac92492d2347c6235b4d2611184  new_file
+touch new_file.b1946ac92492d2347c6235b4d2611184.done
+```
+### In the Java code...
+The _onNewFile()_ callback will be invoked if _new\_file_ exists and the checksum match with the one in the _*.done_ file name
 
 ```java
 DirectoryObserver observer = new DirectoryObserver(new File("myDir"));
