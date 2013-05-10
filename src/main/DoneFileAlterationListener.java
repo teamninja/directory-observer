@@ -6,11 +6,13 @@ import java.io.FileInputStream;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.log4j.*;
 
 final class DoneFileAlterationListener implements FileAlterationListener
 {
 	private final NewFileListener newFileListener;
-
+	private Logger log = Logger.getLogger(DoneFileAlterationListener.class);
+	
 	public DoneFileAlterationListener(NewFileListener newFileListener)
 	{
 		this.newFileListener = newFileListener;
@@ -36,7 +38,7 @@ final class DoneFileAlterationListener implements FileAlterationListener
 	{
 		try
 		{
-			System.out.println("Received done file " + doneFile.getName());
+			log.info("Received done file " + doneFile.getName());
 			
 			String[] tokens = doneFile.getName().split("\\.");
 			if (tokens.length != 3)

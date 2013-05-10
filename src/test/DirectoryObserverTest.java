@@ -11,6 +11,7 @@ import main.*;
 
 import org.apache.commons.codec.digest.*;
 import org.apache.commons.io.*;
+import org.apache.log4j.*;
 import org.junit.*;
 
 public class DirectoryObserverTest
@@ -24,6 +25,8 @@ public class DirectoryObserverTest
 	@Before
 	public void before() throws IOException
 	{
+		BasicConfigurator.configure();
+		
 		tempDir = Files.createTempDirectory("observable");
 		observer = new DirectoryObserver(tempDir.toFile());
 		callbackExecuted = new AtomicBoolean(false);

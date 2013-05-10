@@ -5,11 +5,13 @@ import java.io.File;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.log4j.*;
 
 public class DirectoryObserver
 {
 	private FileAlterationObserver observer;
-
+	private Logger log = Logger.getLogger(DirectoryObserver.class);
+	
 	public DirectoryObserver(File directory)
 	{
 		observer = new FileAlterationObserver(directory, FileFilterUtils.suffixFileFilter(".done"));
@@ -25,6 +27,6 @@ public class DirectoryObserver
 		FileAlterationMonitor monitor = new FileAlterationMonitor(10, observer);
 		monitor.start();
 		
-		System.out.println("Watching for new files...");
+		log.info("Watching for new files...");
 	}
 }
