@@ -34,16 +34,22 @@ final class DoneFileAlterationListener implements FileAlterationListener
 	@Override
 	public void onFileCreate(File doneFile)
 	{
-		System.out.println("Received done file " + doneFile.getName());
-		
-		String[] tokens = doneFile.getName().split("\\.");
-		String name = tokens[0];
-		String md5 = tokens[1];
-		
-		File newFile = new File(doneFile.getParent() + File.separator + name);
-		
 		try
 		{
+			System.out.println("Received done file " + doneFile.getName());
+			
+			String[] tokens = doneFile.getName().split("\\.");
+			if (tokens.length != 3)
+			{
+				newFileListener.onError(doneFile, new WrongDoneFileName());
+				return;
+			}
+			
+			String name = tokens[0];
+			String md5 = tokens[1];
+			
+			File newFile = new File(doneFile.getParent() + File.separator + name);
+			
 			String calculatedMd5 = DigestUtils.md5Hex(new FileInputStream(newFile));
 			
 			if (calculatedMd5.equals(md5))

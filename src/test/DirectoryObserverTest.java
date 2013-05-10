@@ -13,8 +13,6 @@ import org.apache.commons.codec.digest.*;
 import org.apache.commons.io.*;
 import org.junit.*;
 
-
-
 public class DirectoryObserverTest
 {
 	private Path tempDir;
@@ -147,6 +145,17 @@ public class DirectoryObserverTest
 	@Test
 	public void testErrorBecauseDoneFileDoesntHaveNewFile() throws Exception
 	{
+		testForWrongDoneFile(myFileName + ".fakemd5", FileNotFoundException.class);
+	}
+	
+	@Test
+	public void testErrorDoneFileWithWrongFileName() throws Exception
+	{
+		testForWrongDoneFile("mywrong", WrongDoneFileName.class);
+	}
+	
+	private void testForWrongDoneFile(String doneFileName, final Class<?> expectedException) throws Exception
+	{
 		observer.addListener(new NewFileListener()
 		{
 			@Override
@@ -158,6 +167,7 @@ public class DirectoryObserverTest
 			@Override
 			public void onError(File doneFile, Exception e)
 			{
+				assertEquals(expectedException, e.getClass());
 				notifyFromCallback();
 			}
 			
@@ -170,7 +180,7 @@ public class DirectoryObserverTest
 		
 		observer.start();
 		
-		Files.createFile(tempDir.resolve(myFileName + ".fakemd5.done"));
+		Files.createFile(tempDir.resolve(doneFileName + ".done"));
 		
 		waitForCallback();
 	}
