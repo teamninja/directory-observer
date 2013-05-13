@@ -51,6 +51,7 @@ final class DoneFileAlterationListener implements FileAlterationListener
 			String md5 = tokens[1];
 			
 			File newFile = new File(doneFile.getParent() + File.separator + name);
+			doneFile.delete();
 			
 			String calculatedMd5 = DigestUtils.md5Hex(new FileInputStream(newFile));
 			
