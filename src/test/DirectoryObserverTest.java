@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -89,13 +90,18 @@ public class DirectoryObserverTest
 		observer.start();
 		
 		String[] newFileNames = new String[]{"f1", "f2", "f3"};
+		List<Path> doneFiles = new ArrayList<Path>();
+		
 		for (String newFileName : newFileNames)
 		{
 			Path newFile = Files.createFile(tempDir.resolve(newFileName));
 			IOUtils.write(newFileName, new FileWriter(newFile.toFile()));
 			
 			String md5 = DigestUtils.md5Hex(new FileInputStream(newFile.toFile()));
-			Files.createFile(tempDir.resolve(newFileName + "." + md5 + ".done"));
+			Path doneFile = tempDir.resolve(newFileName + "." + md5 + ".done");
+			
+			doneFiles.add(doneFile);
+			Files.createFile(doneFile);
 		}
 		
 		synchronized (lock)
@@ -109,6 +115,11 @@ public class DirectoryObserverTest
 		for (String newFileName : newFileNames)
 		{
 			assertTrue(newFiles.contains(newFileName));
+		}
+		
+		for (Path doneFile : doneFiles)
+		{
+			assertFalse(doneFile.toFile().exists());
 		}
 	}
 	
