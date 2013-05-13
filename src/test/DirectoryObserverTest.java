@@ -7,12 +7,13 @@ import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import main.*;
 
 import org.apache.commons.codec.digest.*;
 import org.apache.commons.io.*;
 import org.apache.log4j.*;
 import org.junit.*;
+
+import directoryobserver.*;
 
 public class DirectoryObserverTest
 {
