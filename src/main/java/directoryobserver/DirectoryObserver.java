@@ -1,11 +1,11 @@
 package main.java.directoryobserver;
 
-import java.io.File;
-
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
+
+import java.io.File;
 
 public class DirectoryObserver
 {
@@ -14,7 +14,7 @@ public class DirectoryObserver
 	
 	public DirectoryObserver(File directory)
 	{
-		observer = new FileAlterationObserver(directory, FileFilterUtils.suffixFileFilter(".done"));
+        observer = new FileAlterationObserver(directory, FileFilterUtils.suffixFileFilter(".done"));
 	}
 	
 	public void addListener(NewFileListener listener)
