@@ -1,4 +1,4 @@
-package directoryobserver;
+package main.java.directoryobserver;
 
 public class WrongDoneFileName extends Exception
 {

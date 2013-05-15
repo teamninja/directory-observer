@@ -1,4 +1,4 @@
-package directoryobserver;
+package main.java.directoryobserver;
 
 import java.io.File;
 
