@@ -200,10 +200,4 @@ public class DirectoryObserverTest
 		
 		waitForCallback();
 	}
-
-    @Test
-    public void travisTest()
-    {
-        fail("travis help me");
-    }
 }
