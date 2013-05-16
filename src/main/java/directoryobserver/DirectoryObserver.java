@@ -6,12 +6,13 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 public class DirectoryObserver
 {
 	private FileAlterationObserver observer;
 	private Logger log = Logger.getLogger(DirectoryObserver.class);
-    private NewFileListener newFileListener;
+    private Consumer<File> newFileListener;
     private ChecksumMismatchListener checksumMismatchListener;
     private ErrorListener errorListener;
 
@@ -20,7 +21,7 @@ public class DirectoryObserver
         observer = new FileAlterationObserver(directory, FileFilterUtils.suffixFileFilter(".done"));
 	}
 	
-	public void setNewFileListener(NewFileListener listener)
+	public void setNewFileListener(Consumer<File> listener)
 	{
         newFileListener = listener;
 	}

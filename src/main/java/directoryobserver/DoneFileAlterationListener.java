@@ -2,6 +2,7 @@ package main.java.directoryobserver;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.function.Consumer;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.monitor.FileAlterationListener;
@@ -10,12 +11,12 @@ import org.apache.log4j.*;
 
 final class DoneFileAlterationListener implements FileAlterationListener
 {
-	private final NewFileListener newFileListener;
+	private final Consumer<File> newFileListener;
     private ChecksumMismatchListener checksumMismatchListener;
     private ErrorListener errorListener;
     private Logger log = Logger.getLogger(DoneFileAlterationListener.class);
 	
-	public DoneFileAlterationListener(NewFileListener newFileListener, ChecksumMismatchListener checksumMismatchListener, ErrorListener errorListener)
+	public DoneFileAlterationListener(Consumer<File> newFileListener, ChecksumMismatchListener checksumMismatchListener, ErrorListener errorListener)
 	{
 		this.newFileListener = newFileListener;
         this.checksumMismatchListener = checksumMismatchListener;
@@ -63,7 +64,7 @@ final class DoneFileAlterationListener implements FileAlterationListener
 			if (calculatedMd5.equals(md5))
 			{
                 if (newFileListener != null)
-				    newFileListener.onNewFile(newFile);
+				    newFileListener.accept(newFile);
 			}
 			else
 			{
