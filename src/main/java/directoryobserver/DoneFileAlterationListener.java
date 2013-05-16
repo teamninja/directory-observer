@@ -11,12 +11,16 @@ import org.apache.log4j.*;
 final class DoneFileAlterationListener implements FileAlterationListener
 {
 	private final NewFileListener newFileListener;
-	private Logger log = Logger.getLogger(DoneFileAlterationListener.class);
+    private ChecksumMismatchListener checksumMismatchListener;
+    private ErrorListener errorListener;
+    private Logger log = Logger.getLogger(DoneFileAlterationListener.class);
 	
-	public DoneFileAlterationListener(NewFileListener newFileListener)
+	public DoneFileAlterationListener(NewFileListener newFileListener, ChecksumMismatchListener checksumMismatchListener, ErrorListener errorListener)
 	{
 		this.newFileListener = newFileListener;
-	}
+        this.checksumMismatchListener = checksumMismatchListener;
+        this.errorListener = errorListener;
+    }
 	
 	@Override
 	public void onStop(FileAlterationObserver observer)
@@ -43,7 +47,9 @@ final class DoneFileAlterationListener implements FileAlterationListener
 			String[] tokens = doneFile.getName().split("\\.");
 			if (tokens.length != 3)
 			{
-				newFileListener.onError(doneFile, new WrongDoneFileName());
+                if (errorListener != null)
+                    errorListener.onError(doneFile, new WrongDoneFileName());
+
 				return;
 			}
 			
@@ -56,16 +62,19 @@ final class DoneFileAlterationListener implements FileAlterationListener
 			
 			if (calculatedMd5.equals(md5))
 			{
-				newFileListener.onNewFile(newFile);
+                if (newFileListener != null)
+				    newFileListener.onNewFile(newFile);
 			}
 			else
 			{
-				newFileListener.onChecksumMismatch(newFile, doneFile);
+                if (checksumMismatchListener != null)
+                    checksumMismatchListener.onChecksumMismatch(newFile, doneFile);
 			}
 		}
 		catch (Exception e)
 		{
-			newFileListener.onError(doneFile, e);
+            if (errorListener != null)
+                errorListener.onError(doneFile, e);
 		}
 		finally
 		{

@@ -11,19 +11,34 @@ public class DirectoryObserver
 {
 	private FileAlterationObserver observer;
 	private Logger log = Logger.getLogger(DirectoryObserver.class);
-	
-	public DirectoryObserver(File directory)
+    private NewFileListener newFileListener;
+    private ChecksumMismatchListener checksumMismatchListener;
+    private ErrorListener errorListener;
+
+    public DirectoryObserver(File directory)
 	{
         observer = new FileAlterationObserver(directory, FileFilterUtils.suffixFileFilter(".done"));
 	}
 	
-	public void addListener(NewFileListener listener)
+	public void setNewFileListener(NewFileListener listener)
 	{
-		observer.addListener(new DoneFileAlterationListener(listener));
+        newFileListener = listener;
 	}
+
+    public void setChecksumMismatchListener(ChecksumMismatchListener listener)
+    {
+        checksumMismatchListener = listener;
+    }
+
+    public void setErrorListener(ErrorListener listener)
+    {
+        errorListener = listener;
+    }
 	
 	public void start() throws Exception
 	{
+        observer.addListener(new DoneFileAlterationListener(newFileListener, checksumMismatchListener, errorListener));
+
 		FileAlterationMonitor monitor = new FileAlterationMonitor(10, observer);
 		monitor.start();
 		

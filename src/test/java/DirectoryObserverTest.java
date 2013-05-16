@@ -64,29 +64,11 @@ public class DirectoryObserverTest
 	public void testMultipleNewFilesAllIsOk() throws Exception
 	{
 		final ConcurrentLinkedDeque<String> newFiles = new ConcurrentLinkedDeque<String>();
-		
-		observer.addListener(new NewFileListener()
-		{
-			@Override
-			public void onNewFile(File newFile)
-			{
-				newFiles.add(newFile.getName());
-				
-				notifyFromCallback();
-			}
-			
-			@Override
-			public void onError(File doneFile, Exception e)
-			{
-				fail();
-			}
-			
-			@Override
-			public void onChecksumMismatch(File newFile, File doneFile)
-			{
-				fail();
-			}
-		});
+
+        observer.setNewFileListener((newFile) -> {newFiles.add(newFile.getName()); notifyFromCallback();});
+
+        observer.setChecksumMismatchListener((newFile, doneFile) -> fail());
+        observer.setErrorListener((doneFile, e) -> fail());
 		
 		observer.start();
 		
@@ -127,26 +109,9 @@ public class DirectoryObserverTest
 	@Test
 	public void testChecksumError() throws Exception
 	{
-		observer.addListener(new NewFileListener()
-		{
-			@Override
-			public void onNewFile(File newFile)
-			{
-				fail();
-			}
-			
-			@Override
-			public void onError(File doneFile, Exception e)
-			{
-				fail();
-			}
-			
-			@Override
-			public void onChecksumMismatch(File newFile, File doneFile)
-			{
-				notifyFromCallback();
-			}
-		});
+        observer.setNewFileListener(f -> fail());
+        observer.setChecksumMismatchListener((newFile, doneFile) -> notifyFromCallback());
+        observer.setErrorListener((doneFile, e) -> fail());
 		
 		observer.start();
 		
@@ -172,27 +137,9 @@ public class DirectoryObserverTest
 	
 	private void testForWrongDoneFile(String doneFileName, final Class<?> expectedException) throws Exception
 	{
-		observer.addListener(new NewFileListener()
-		{
-			@Override
-			public void onNewFile(File newFile)
-			{
-				fail();
-			}
-			
-			@Override
-			public void onError(File doneFile, Exception e)
-			{
-				assertEquals(expectedException, e.getClass());
-				notifyFromCallback();
-			}
-			
-			@Override
-			public void onChecksumMismatch(File newFile, File doneFile)
-			{
-				fail();
-			}
-		});
+        observer.setNewFileListener(f -> fail());
+        observer.setChecksumMismatchListener((newFile, doneFile) -> fail());
+        observer.setErrorListener((doneFile, e) -> {assertEquals(expectedException, e.getClass()); notifyFromCallback();});
 		
 		observer.start();
 		

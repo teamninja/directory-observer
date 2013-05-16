@@ -3,8 +3,7 @@ package main.java.directoryobserver;
 import java.io.File;
 
 @FunctionalInterface
-public interface NewFileListener
+public interface ErrorListener
 {
-	void onNewFile(File newFile);
+    void onError(File doneFile, Exception e);
 }
-
