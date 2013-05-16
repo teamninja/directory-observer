@@ -1,5 +1,6 @@
 directory-observer
 ==================
+<img src="https://secure.travis-ci.org/alecava/directory-observer.png" alt="Build Status" />
 
 A library for observing a directory and getting notified when a new file is added
 
