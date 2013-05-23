@@ -24,7 +24,7 @@ public class DirectoryObserver
 	
 	public void start() throws Exception
 	{
-		FileAlterationMonitor monitor = new FileAlterationMonitor(10, observer);
+		FileAlterationMonitor monitor = new FileAlterationMonitor(500, observer);
 		monitor.start();
 		
 		log.info("Watching for new files...");
