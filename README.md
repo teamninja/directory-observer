@@ -22,7 +22,7 @@ b1946ac92492d2347c6235b4d2611184  new_file
 The _onNewFile()_ callback will be invoked if _new\_file_ exists and the checksum match with the one in the _*.done_ file name
 
 ```java
-DirectoryObserver observer = new DirectoryObserver(new File("myDir"));
+DirectoryObserver observer = new DirectoryObserver(new File("/home/user/observable"));
 
 observer.addListener(new NewFileListener()
 {
