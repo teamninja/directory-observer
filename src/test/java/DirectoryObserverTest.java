@@ -91,7 +91,7 @@ public class DirectoryObserverTest
 		observer.start();
 		
 		String[] newFileNames = new String[]{"f1", "f2", "f3"};
-		List<Path> doneFiles = new ArrayList<Path>();
+		List<Path> doneFiles = new ArrayList<>();
 		
 		for (String newFileName : newFileNames)
 		{
