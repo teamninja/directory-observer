@@ -1,4 +1,8 @@
-import static org.junit.Assert.*;
+import directoryobserver.*;
+import org.apache.commons.codec.digest.*;
+import org.apache.commons.io.*;
+import org.apache.log4j.*;
+import org.junit.*;
 
 import java.io.*;
 import java.nio.file.*;
@@ -6,14 +10,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-
-import directoryobserver.DirectoryObserver;
-import directoryobserver.NewFileListener;
-import directoryobserver.WrongDoneFileName;
-import org.apache.commons.codec.digest.*;
-import org.apache.commons.io.*;
-import org.apache.log4j.*;
-import org.junit.*;
+import static org.junit.Assert.*;
 
 public class DirectoryObserverTest
 {
@@ -61,7 +58,7 @@ public class DirectoryObserverTest
 	@Test
 	public void testMultipleNewFilesAllIsOk() throws Exception
 	{
-		final ConcurrentLinkedDeque<String> newFiles = new ConcurrentLinkedDeque<String>();
+		final ConcurrentLinkedDeque<String> newFiles = new ConcurrentLinkedDeque<>();
 		
 		observer.addListener(new NewFileListener()
 		{
@@ -93,15 +90,10 @@ public class DirectoryObserverTest
 		
 		for (String newFileName : newFileNames)
 		{
-			Path newFile = Files.createFile(tempDir.resolve(newFileName));
-			IOUtils.write(newFileName, new FileWriter(newFile.toFile()));
-			
-			String md5 = DigestUtils.md5Hex(new FileInputStream(newFile.toFile()));
-			Path doneFile = tempDir.resolve(newFileName + "." + md5 + ".done");
-			
-			doneFiles.add(doneFile);
-			Files.createFile(doneFile);
-		}
+            Path doneFile = writeNewFileWithDoneFile(newFileName);
+
+            doneFiles.add(doneFile);
+        }
 		
 		synchronized (lock)
 		{
@@ -121,8 +113,8 @@ public class DirectoryObserverTest
 			assertFalse(doneFile.toFile().exists());
 		}
 	}
-	
-	@Test
+
+    @Test
 	public void testChecksumError() throws Exception
 	{
 		observer.addListener(new NewFileListener()
@@ -155,19 +147,62 @@ public class DirectoryObserverTest
 		
 		waitForCallback();
 	}
+
+    @Test
+    public void testDoneFileAlreadyInTheDirectoryBeforeStart() throws Exception
+    {
+        observer.addListener(new NewFileListener()
+        {
+            @Override
+            public void onNewFile(File newFile)
+            {
+                notifyFromCallback();
+            }
+
+            @Override
+            public void onError(File doneFile, Exception e)
+            {
+                fail();
+            }
+
+            @Override
+            public void onChecksumMismatch(File newFile, File doneFile)
+            {
+                fail();
+            }
+        });
+
+        writeNewFileWithDoneFile("alreadyHere");
+
+        observer.start();
+
+        waitForCallback();
+    }
 	
 	@Test
 	public void testErrorBecauseDoneFileDoesntHaveNewFile() throws Exception
 	{
 		testForWrongDoneFile(myFileName + ".fakemd5", FileNotFoundException.class);
 	}
-	
+
 	@Test
 	public void testErrorDoneFileWithWrongFileName() throws Exception
 	{
 		testForWrongDoneFile("mywrong", WrongDoneFileName.class);
 	}
-	
+
+    private Path writeNewFileWithDoneFile(String newFileName) throws IOException
+    {
+        Path newFile = Files.createFile(tempDir.resolve(newFileName));
+        IOUtils.write(newFileName, new FileWriter(newFile.toFile()));
+
+        String md5 = DigestUtils.md5Hex(new FileInputStream(newFile.toFile()));
+        Path doneFile = tempDir.resolve(newFileName + "." + md5 + ".done");
+
+        Files.createFile(doneFile);
+        return doneFile;
+    }
+
 	private void testForWrongDoneFile(String doneFileName, final Class<?> expectedException) throws Exception
 	{
 		observer.addListener(new NewFileListener()

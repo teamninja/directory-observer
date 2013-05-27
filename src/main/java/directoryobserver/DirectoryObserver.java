@@ -1,20 +1,24 @@
 package directoryobserver;
 
-import java.io.File;
-
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.io.*;
+import org.apache.commons.io.filefilter.*;
+import org.apache.commons.io.monitor.*;
 import org.apache.log4j.*;
+
+import java.io.*;
 
 public class DirectoryObserver
 {
-	private FileAlterationObserver observer;
+    private final IOFileFilter doneFileFilter;
+    private FileAlterationObserver observer;
 	private Logger log = Logger.getLogger(DirectoryObserver.class);
-	
-	public DirectoryObserver(File directory)
+    private File directory;
+
+    public DirectoryObserver(File directory)
 	{
-		observer = new FileAlterationObserver(directory, FileFilterUtils.suffixFileFilter(".done"));
+        this.directory = directory;
+        doneFileFilter = FileFilterUtils.suffixFileFilter(".done");
+        observer = new FileAlterationObserver(directory, doneFileFilter);
 	}
 	
 	public void addListener(NewFileListener listener)
@@ -25,6 +29,15 @@ public class DirectoryObserver
 	public void start() throws Exception
 	{
 		FileAlterationMonitor monitor = new FileAlterationMonitor(500, observer);
+
+        for (FileAlterationListener listener : observer.getListeners())
+        {
+            for (File doneFile : FileUtils.listFiles(directory, doneFileFilter, FileFilterUtils.directoryFileFilter()))
+            {
+                listener.onFileCreate(doneFile);
+            }
+        }
+
 		monitor.start();
 		
 		log.info("Watching for new files...");
