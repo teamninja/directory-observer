@@ -1,5 +1,3 @@
-package test.java;
-
 import static org.junit.Assert.*;
 
 import java.io.*;
@@ -9,9 +7,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 
-import main.java.directoryobserver.DirectoryObserver;
-import main.java.directoryobserver.NewFileListener;
-import main.java.directoryobserver.WrongDoneFileName;
+import directoryobserver.DirectoryObserver;
+import directoryobserver.NewFileListener;
+import directoryobserver.WrongDoneFileName;
 import org.apache.commons.codec.digest.*;
 import org.apache.commons.io.*;
 import org.apache.log4j.*;
