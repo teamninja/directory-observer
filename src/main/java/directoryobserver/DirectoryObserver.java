@@ -13,6 +13,7 @@ public class DirectoryObserver
     private FileAlterationObserver observer;
 	private Logger log = Logger.getLogger(DirectoryObserver.class);
     private File directory;
+    static boolean isStarting = false;
 
     public DirectoryObserver(File directory)
 	{
@@ -30,6 +31,10 @@ public class DirectoryObserver
 	{
 		FileAlterationMonitor monitor = new FileAlterationMonitor(500, observer);
 
+        isStarting = true;
+        monitor.start();
+        log.info("Watching for new files...");
+
         for (FileAlterationListener listener : observer.getListeners())
         {
             for (File doneFile : FileUtils.listFiles(directory, doneFileFilter, FileFilterUtils.directoryFileFilter()))
@@ -37,9 +42,6 @@ public class DirectoryObserver
                 listener.onFileCreate(doneFile);
             }
         }
-
-		monitor.start();
-		
-		log.info("Watching for new files...");
+        isStarting = false;
 	}
 }

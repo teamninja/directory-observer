@@ -1,12 +1,10 @@
 package directoryobserver;
 
-import java.io.File;
-import java.io.FileInputStream;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.codec.digest.*;
+import org.apache.commons.io.monitor.*;
 import org.apache.log4j.*;
+
+import java.io.*;
 
 final class DoneFileAlterationListener implements FileAlterationListener
 {
@@ -39,29 +37,36 @@ final class DoneFileAlterationListener implements FileAlterationListener
 		try
 		{
 			log.info("Received done file " + doneFile.getName());
-			
-			String[] tokens = doneFile.getName().split("\\.");
-			if (tokens.length != 3)
-			{
-				newFileListener.onError(doneFile, new WrongDoneFileName());
-				return;
-			}
-			
-			String name = tokens[0];
-			String md5 = tokens[1];
-			
-			File newFile = new File(doneFile.getParent() + File.separator + name);
-			
-			String calculatedMd5 = DigestUtils.md5Hex(new FileInputStream(newFile));
-			
-			if (calculatedMd5.equals(md5))
-			{
-				newFileListener.onNewFile(newFile);
-			}
-			else
-			{
-				newFileListener.onChecksumMismatch(newFile, doneFile);
-			}
+
+            if(doneFile.exists())
+            {
+                String[] tokens = doneFile.getName().split("\\.");
+                if (tokens.length != 3)
+                {
+                    newFileListener.onError(doneFile, new WrongDoneFileName());
+                    return;
+                }
+
+                String name = tokens[0];
+                String md5 = tokens[1];
+
+                File newFile = new File(doneFile.getParent() + File.separator + name);
+
+                String calculatedMd5 = DigestUtils.md5Hex(new FileInputStream(newFile));
+
+                if (calculatedMd5.equals(md5))
+                {
+                    newFileListener.onNewFile(newFile);
+                }
+                else
+                {
+                    newFileListener.onChecksumMismatch(newFile, doneFile);
+                }
+            }
+            else if(!DirectoryObserver.isStarting)
+            {
+                newFileListener.onError(doneFile, new DoneFileException());
+            }
 		}
 		catch (Exception e)
 		{

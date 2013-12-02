@@ -1,6 +1,7 @@
 import directoryobserver.*;
 import org.apache.commons.codec.digest.*;
 import org.apache.commons.io.*;
+import org.apache.commons.io.filefilter.*;
 import org.apache.log4j.*;
 import org.junit.*;
 
@@ -191,6 +192,77 @@ public class DirectoryObserverTest
 		testForWrongDoneFile("mywrong", WrongDoneFileName.class);
 	}
 
+    @Test
+    public void testDoneFileAddedInTheDirectoryDuringStart() throws Exception
+    {
+        instantiateListener();
+
+        Thread doneFileCreatorThread = createThreadCreatingNewFilesInDirectory();
+
+        writeNewFileWithDoneFile("alreadyHere1");
+
+        doneFileCreatorThread.start();
+        observer.start();
+
+        doneFileCreatorThread.join();
+
+        Thread.sleep(3000);
+        callbackExecuted.set(true);    // To make @After happy
+
+        assertEquals(0, FileUtils.listFiles(tempDir.toFile(), FileFilterUtils.suffixFileFilter(".done"), FileFilterUtils.directoryFileFilter()).size());
+    }
+
+    private Thread createThreadCreatingNewFilesInDirectory()
+    {
+        return new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        for(int i = 0; i< 5; i++)
+                        {
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            writeNewFileWithDoneFile("created_during_start" + i);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+    }
+
+    private void instantiateListener()
+    {
+        observer.addListener(new NewFileListener()
+        {
+            @Override
+            public void onNewFile(File newFile)
+            {
+                try {
+                    Thread.sleep(50);
+                    newFile.delete();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(File doneFile, Exception e)
+            {
+                fail();
+            }
+
+            @Override
+            public void onChecksumMismatch(File newFile, File doneFile)
+            {
+                fail();
+            }
+        });
+    }
+
     private Path writeNewFileWithDoneFile(String newFileName) throws IOException
     {
         Path newFile = Files.createFile(tempDir.resolve(newFileName));
@@ -233,4 +305,5 @@ public class DirectoryObserverTest
 		
 		waitForCallback();
 	}
+
 }
