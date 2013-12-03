@@ -11,25 +11,26 @@ public class DirectoryObserver
 {
     private final IOFileFilter doneFileFilter;
     private FileAlterationObserver observer;
-	private Logger log = Logger.getLogger(DirectoryObserver.class);
+    private Logger log = Logger.getLogger(DirectoryObserver.class);
     private File directory;
+    FileAlterationMonitor monitor;
     static boolean isStarting = false;
 
     public DirectoryObserver(File directory)
-	{
+    {
         this.directory = directory;
         doneFileFilter = FileFilterUtils.suffixFileFilter(".done");
         observer = new FileAlterationObserver(directory, doneFileFilter);
-	}
-	
-	public void addListener(NewFileListener listener)
-	{
-		observer.addListener(new DoneFileAlterationListener(listener));
-	}
-	
-	public void start() throws Exception
-	{
-		FileAlterationMonitor monitor = new FileAlterationMonitor(500, observer);
+        monitor = new FileAlterationMonitor(500, observer);
+    }
+
+    public void addListener(NewFileListener listener)
+    {
+        observer.addListener(new DoneFileAlterationListener(listener));
+    }
+
+    public void start() throws Exception
+    {
 
         isStarting = true;
         monitor.start();
@@ -43,5 +44,10 @@ public class DirectoryObserver
             }
         }
         isStarting = false;
-	}
+    }
+
+    public void stop() throws Exception
+    {
+            monitor.stop();
+    }
 }
